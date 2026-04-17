@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juler's Server (Status)</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+
+        .notice h2 {
+            color: #856404;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .notice p {
+            color: #856404;
+            font-size: 0.9em;
+        }
+
+        #isRunning {
+            padding: 12px 15px;
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+            border-radius: 4px;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .timeline {
+            margin-top: 30px;
+        }
+
+        .timeline h2 {
+            color: #1a1a1a;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+    </style>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h2 {
+            color: #555;
+        }
+
+        p {
+            font-size: 1.2em;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="notice" id="notice"></div>
+    <h1>Status</h1>
+    <p id="isRunning">Checking server status...</p>
+
+    <div class="timeline">
+        <h2>Past Incidents</h2>
+        <div id="pastIncidents">
+            <!-- Past incidents will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <script>
+        const notice = document.getElementById("notice");
+        if (notice) {
+            notice.style.display = "none";
+        }
+
+        fetch('/api/notice')
+            .then(response => response.json())
+            .then(notice => {
+                const noticeElement = document.getElementById("notice");
+                if (notice && notice.title && notice.content) {
+                    noticeElement.style.display = 'block'; // show notice if data exists
+                    noticeElement.innerHTML = `<h2>${notice.title}</h2><p>${notice.content}</p>`;
+                } else {
+                    noticeElement.style.display = 'none'; // hide notice if no data
+                }
+            });
+
+        fetch('https://bonillainthemix.ngrok.app/', { method: 'HEAD' }) // one of the pages in the server
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('isRunning').textContent = 'Server is running!';
+                } else {
+                    document.getElementById('isRunning').textContent = 'Server is not responding.';
+                }
+            })
+            .catch(error => {
+                console.error('Error checking server status:', error);
+                if (error.message.includes('502')) {
+                    document.getElementById('isRunning').textContent = 'Bad Gateway - The server is running but the website crashed.';
+                } else {
+                    document.getElementById('isRunning').textContent = 'Error checking server status.';
+                }
+            });
+
+        fetch('/api/pastincidents')
+            .then(response => response.json())
+            // Incidents data: {status: 200, data: {0: {date: new Date(), status: 200}}}
+            .then(data => {
+                const pastIncidentsContainer = document.getElementById('pastIncidents');
+                if (data && data.data) {
+                    const incidents = Object.values(data.data);
+                    if (incidents.length === 0) {
+                        pastIncidentsContainer.innerHTML = '<p>No past incidents recorded.</p>';
+                    } else {
+                        const list = document.createElement('ul');
+                        incidents.forEach(incident => {
+                            const listItem = document.createElement('li');
+                            const date = new Date(incident.date);
+                            listItem.textContent = `${date.toLocaleString()}: Status ${incident.status}`;
+                            list.appendChild(listItem);
+                        });
+                        pastIncidentsContainer.appendChild(list);
+                    }
+                } else {
+                    pastIncidentsContainer.innerHTML = '<p>No past incidents recorded.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching past incidents:', error);
+                document.getElementById('pastIncidents').innerHTML = '<p>Error loading past incidents.</p>';
+            });
+    </script>
+</body>
+
+</html>
