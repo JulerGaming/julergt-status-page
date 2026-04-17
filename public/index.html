@@ -146,7 +146,7 @@
 
         fetch('/api/pastincidents')
             .then(response => response.json())
-            // Incidents data: {status: 200, data: {0: {date: new Date(), status: 200}}}
+            // Incidents data: {status: 200, data: {0: {date: new Date().toISOString(), status: 200}}}
             .then(data => {
                 const pastIncidentsContainer = document.getElementById('pastIncidents');
                 if (data && data.data) {
@@ -157,7 +157,7 @@
                         const list = document.createElement('ul');
                         incidents.forEach(incident => {
                             const listItem = document.createElement('li');
-                            const date = new Date(incident.date);
+                            const date = new Date(incident.timestamp);
                             listItem.textContent = `${date.toLocaleString()}: Status ${incident.status}`;
                             list.appendChild(listItem);
                         });
