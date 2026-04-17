@@ -12,8 +12,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+app.listen(443, () => {
+    console.log('Server is running on https://localhost:443');
 });
 
 const { exec } = require("child_process");
@@ -30,7 +30,6 @@ function run(cmd) {
 let hasSyncRepo = false;
 
 async function syncRepo() {
-    if (!cff.GitHub) { return null; }
     try {
         console.log("Checking remote changes...");
 
