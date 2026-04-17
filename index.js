@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(80, "0.0.0.0", () => {
-    console.log('Server is running on https://localhost:8080');
+    console.log('Server is running on https://localhost:80');
 });
 
 const { exec } = require("child_process");
@@ -117,8 +117,10 @@ app.get('/api/pastincidents', (req, res) => {
 
 function checkWebsiteNow() {
     https.get('https://bonillainthemix.ngrok.app/', (response) => {
-        if (response.statusCode !== 200) {
+        if (response.statusCode === 200) {
             logIncident(200);
+        } else {
+            logIncident(response.statusCode);
         }
     }).on('error', (err) => {
         logIncident(500);
@@ -137,3 +139,7 @@ function logIncident(status) {
 
     fs.writeFileSync(path.join(__dirname, 'incidents.json'), JSON.stringify(INCIDENTS_FILE, null, 2));
 }
+
+checkWebsiteNow();
+
+setInterval(checkWebsiteNow, 5 * 60 * 1000); // every 5 minutes
