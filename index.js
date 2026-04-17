@@ -133,7 +133,7 @@ function logIncident(status) {
         status: status
     };
     const file = require('./incidents.json');
-    const counter = Object.keys(file).length;
+    const counter = Object.keys(file).length
 
     file[counter] = incident;
 
