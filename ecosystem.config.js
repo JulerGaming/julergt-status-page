@@ -1,6 +1,6 @@
 module.exports = {
     apps: [{
-        name: "horror-rebot",
+        name: "julergt-status-page",
         script: "index.js",
         watch: ["index.js"],
         ignore_watch: ["node_modules"],
