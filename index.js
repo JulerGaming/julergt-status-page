@@ -137,7 +137,7 @@ function logIncident(status) {
 
     file[counter] = incident;
 
-    fs.writeFileSync(path.join(__dirname, 'incidents.json'), JSON.stringify(INCIDENTS_FILE, null, 2));
+    fs.writeFileSync(path.join(__dirname, 'incidents.json'), JSON.stringify("./incidents.json", null, 2));
 }
 
 checkWebsiteNow();
