@@ -101,8 +101,8 @@ setInterval(syncRepo, 1 * 60 * 1000); // every 1 minute
 
 app.get('/api/notice', (req, res) => {
     const notice = {
-        title: 'Server Notice',
-        content: 'A Flash Flood Warning in the server\'s area is in effect. The server may go down in any moment. Your data is safe.'
+        title: null,
+        content: null
     };
     res.json(notice);
 });
