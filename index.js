@@ -41,7 +41,6 @@ async function syncRepo() {
         if (local !== remote) {
             console.log("Remote updates found. Pulling...");
             await run("git pull");
-            process.exit(0);
         } else {
             console.log("Repo already up to date.");
         }
