@@ -87,11 +87,6 @@ syncRepo();
         console.log(`Missing packages: ${filtered.join(', ')}. Running npm install...`);
         execSync('npm install', { stdio: 'inherit' });
         console.log('Packages installed. Restarting...');
-        const child = spawn(process.execPath, process.argv.slice(1), {
-            detached: true,
-            stdio: 'inherit'
-        });
-        child.unref();
         process.exit(0);
     }
 })();
