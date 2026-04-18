@@ -132,10 +132,14 @@
             .then(data => {
                 if (data.status === 200) {
                     document.getElementById('isRunning').textContent = 'Server is running!';
-                } else {
+                } else if (data.status === 404) {
                     document.getElementById('isRunning').style.background = '#f8d7da';
                     document.getElementById('isRunning').style.borderColor = '#dc3545';
-                    document.getElementById('isRunning').textContent = 'Server is not responding.';
+                    document.getElementById('isRunning').textContent = 'Not found - The server isn\'t running.';
+                } else if (data.status === 502) {
+                    document.getElementById('isRunning').style.background = '#f8d7da';
+                    document.getElementById('isRunning').style.borderColor = '#dc3545';
+                    document.getElementById('isRunning').textContent = 'Bad Gateway - The server is running but the website crashed.';
                 }
             })
             .catch(error => {
