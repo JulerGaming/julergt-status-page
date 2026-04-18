@@ -109,6 +109,18 @@ app.get('/api/pastincidents', (req, res) => {
     res.json({ status: 200, data: INCIDENTS_FILE });
 });
 
+app.get('/api/isUp', (req, res) => {
+    https.get('https://bonillainthemix.ngrok.app/', (response) => {
+        if (response.statusCode === 200) {
+            res.json({ status: 200 });
+        } else {
+            res.json({ status: response.statusCode });
+        }
+    }).on('error', (err) => {
+        res.json({ status: 500 });
+    });
+});
+
 function checkWebsiteNow() {
     https.get('https://bonillainthemix.ngrok.app/', (response) => {
         if (response.statusCode === 200) {

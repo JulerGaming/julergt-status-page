@@ -127,9 +127,10 @@
                 }
             });
 
-        fetch('https://bonillainthemix.ngrok.app/', { method: 'HEAD' }) // one of the pages in the server
-            .then(response => {
-                if (response.ok) {
+        fetch('/api/isUp', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 200) {
                     document.getElementById('isRunning').textContent = 'Server is running!';
                 } else {
                     document.getElementById('isRunning').style.background = '#f8d7da';
