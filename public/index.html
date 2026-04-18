@@ -139,6 +139,8 @@
                 console.error('Error checking server status:', error);
                 if (error.message.includes('502')) {
                     document.getElementById('isRunning').textContent = 'Bad Gateway - The server is running but the website crashed.';
+                } else if (error.message.includes('404')) {
+                    document.getElementById('isRunning').textContent = 'Not found - The server isn\'t running.';
                 } else {
                     document.getElementById('isRunning').textContent = 'Error checking server status.';
                 }
