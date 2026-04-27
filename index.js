@@ -95,8 +95,8 @@ setInterval(syncRepo, 1 * 60 * 1000); // every 1 minute
 
 app.get('/api/notice', (req, res) => {
     const notice = {
-        title: null,
-        content: null
+        title: "Endpoints Offline",
+        content: "I have used all my ngrok credit, so the server is up, just that every website utilizing it is down."
     };
     res.json(notice);
 });
