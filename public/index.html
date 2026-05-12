@@ -58,7 +58,7 @@
             padding: 12px 15px;
             background: #d4edda;
             border-left: 4px solid #28a745;
-            color: #155724;
+            color: #000000;
             border-radius: 4px;
             font-size: 0.95em;
             font-weight: 500;
@@ -140,6 +140,10 @@
                     document.getElementById('isRunning').style.background = '#f8d7da';
                     document.getElementById('isRunning').style.borderColor = '#dc3545';
                     document.getElementById('isRunning').textContent = 'Bad Gateway - The server is running but the website crashed.';
+                } else if (data.status === 403) {
+                    document.getElementById('isRunning').style.background = '#f8d7da';
+                    document.getElementById('isRunning').style.borderColor = '#dc3545';
+                    document.getElementById('isRunning').textContent = 'Forbidden - Access to the web page(s) is forbidden by ngrok.';
                 }
             })
             .catch(error => {
