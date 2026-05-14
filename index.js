@@ -95,8 +95,8 @@ setInterval(syncRepo, 1 * 60 * 1000); // every 1 minute
 
 app.get('/api/notice', (req, res) => {
     const notice = {
-        title: "Endpoints Offline - Vacation",
-        content: "I have used all my ngrok credit, so the server is up, just that every website utilizing it is down.\n\nAlso, I'm on vacation. So if the server goes down, I can't fix it.\n\nMay 1 - 17."
+        title: "Vacation",
+        content: "I'm on vacation. So if the server goes down, I can't fix it.\n\nMay 1 - 17."
     };
     res.json(notice);
 });
