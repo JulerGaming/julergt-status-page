@@ -110,7 +110,7 @@ app.get('/api/pastincidents', (req, res) => {
 });
 
 app.get('/api/isUp', (req, res) => {
-    https.get('https://bonillainthemix.ngrok.app/', (response) => {
+    https.get('https://www.bonillainthemix.org', (response) => {
         if (response.statusCode === 200) {
             res.json({ status: 200 });
         } else {
@@ -122,7 +122,7 @@ app.get('/api/isUp', (req, res) => {
 });
 
 function checkWebsiteNow() {
-    https.get('https://bonillainthemix.ngrok.app/', (response) => {
+    https.get('https://www.bonillainthemix.org', (response) => {
         if (response.statusCode === 200) {
             logIncident(200);
         } else {
