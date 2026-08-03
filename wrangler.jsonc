@@ -1,13 +1,18 @@
 {
     "$schema": "./node_modules/wrangler/config-schema.json",
     "name": "julergt-status-page",
-    "main": "worker.js",
+    "main": "index.js",
     "compatibility_date": "2026-08-03",
+    "assets": {
+        "directory": "./public",
+        "binding": "ASSETS",
+        "run_worker_first": [
+            "/api/*"
+        ]
+    },
     "dev": {
         "port": 8787,
-        "local_protocol": "http",
-        "host": "localhost:3000",
-        "upstream_protocol": "http"
+        "local_protocol": "http"
     },
     "observability": {
         "enabled": false,
