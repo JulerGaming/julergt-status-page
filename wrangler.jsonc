@@ -1,0 +1,12 @@
+{
+    "$schema": "./node_modules/wrangler/config-schema.json",
+    "name": "julergt-status-page",
+    "main": "worker.js",
+    "compatibility_date": "2026-08-03",
+    "dev": {
+        "port": 8787,
+        "local_protocol": "http",
+        "host": "localhost:3000",
+        "upstream_protocol": "http"
+    }
+}

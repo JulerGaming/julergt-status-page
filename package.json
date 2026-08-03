@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "dev:origin": "set DISABLE_REPO_SYNC=1&& node index.js",
+    "dev:wrangler": "wrangler dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,6 +14,6 @@
   "license": "ISC",
   "dependencies": {
     "express": "^5.2.1",
-    "node-cron": "^4.2.1"
+    "wrangler": "^4.118.0"
   }
 }

@@ -1,10 +1,26 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const fs = require('fs');
 const https = require('https');
-const cron = require('node-cron');
-const { count } = require('console');
+const PORT = Number(process.env.PORT) || 3000;
+
+const SERVICES = [
+    {
+        id: 'julers-server',
+        name: "Juler's Server",
+        url: 'https://www.bonillainthemix.org'
+    },
+    {
+        id: 'julers-mod',
+        name: "Juler's Mod",
+        url: 'https://sbox-api.julergt.org'
+    },
+    {
+        id: 'bismuth',
+        name: 'Bismuth',
+        url: 'https://bismuthrr.net'
+    }
+];
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -12,8 +28,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(3000, "0.0.0.0", () => {
-    console.log('Server is running on https://localhost:3000');
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 const { exec } = require("child_process");
@@ -68,7 +84,10 @@ async function syncRepo() {
     }
 }
 
-syncRepo();
+if (process.env.DISABLE_REPO_SYNC !== '1') {
+    syncRepo();
+    setInterval(syncRepo, 1 * 60 * 1000);
+}
 
 (function checkPackages() {
     if (!hasSyncRepo) { return; }
@@ -91,8 +110,6 @@ syncRepo();
     }
 })();
 
-setInterval(syncRepo, 1 * 60 * 1000); // every 1 minute
-
 app.get('/api/notice', (req, res) => {
     const notice = {
         title: null,
@@ -101,51 +118,40 @@ app.get('/api/notice', (req, res) => {
     res.json(notice);
 });
 
-app.get('/api/pastincidents', (req, res) => {
-    // This would be better implemented outside the route handler
-    // Add this near the top of your file, after requires:
-    const INCIDENTS_FILE = require('./incidents.json');
+function checkService(service) {
+    return new Promise((resolve) => {
+        const request = https.get(service.url, { timeout: 8000 }, (response) => {
+            const status = response.statusCode || 500;
+            response.resume();
 
-    res.json({ status: 200, data: INCIDENTS_FILE });
-});
+            resolve({
+                ...service,
+                status,
+                operational: status >= 200 && status < 400
+            });
+        });
 
-app.get('/api/isUp', (req, res) => {
-    https.get('https://www.bonillainthemix.org', (response) => {
-        if (response.statusCode === 200) {
-            res.json({ status: 200 });
-        } else {
-            res.json({ status: response.statusCode });
-        }
-    }).on('error', (err) => {
-        res.json({ status: 500 });
-    });
-});
+        request.on('timeout', () => {
+            request.destroy(new Error('Request timed out'));
+        });
 
-function checkWebsiteNow() {
-    https.get('https://www.bonillainthemix.org', (response) => {
-        if (response.statusCode === 200) {
-            logIncident(200);
-        } else {
-            logIncident(response.statusCode);
-        }
-    }).on('error', (err) => {
-        logIncident(500);
+        request.on('error', () => {
+            resolve({
+                ...service,
+                status: null,
+                operational: false
+            });
+        });
     });
 }
 
-function logIncident(status) {
-    const incident = {
-        timestamp: new Date().toISOString(),
-        status: status
-    };
-    const file = require('./incidents.json');
-    const counter = Object.keys(file).length
+app.get('/api/isUp', async (req, res) => {
+    const services = await Promise.all(SERVICES.map(checkService));
+    const allOperational = services.every(service => service.operational);
 
-    file[counter] = incident;
-
-    fs.writeFileSync(path.join(__dirname, 'incidents.json'), JSON.stringify(file, null, 2));
-}
-
-checkWebsiteNow();
-
-setInterval(checkWebsiteNow, 5 * 60 * 1000); // every 5 minutes
+    res.json({
+        status: allOperational ? 200 : 503,
+        checkedAt: new Date().toISOString(),
+        services
+    });
+});

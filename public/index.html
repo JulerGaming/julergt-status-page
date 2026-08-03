@@ -4,201 +4,445 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juler's Server (Status)</title>
+    <meta name="theme-color" content="#ffffff">
+    <title>JulerGT Status</title>
 
     <style>
+        :root {
+            color-scheme: light;
+            --green: #3bd671;
+            --green-dark: #149447;
+            --green-soft: #edfbf2;
+            --red: #ef5350;
+            --red-soft: #fff1f1;
+            --ink: #242a31;
+            --muted: #858c96;
+            --line: #e6e9ed;
+            --page: #f7f8fa;
+        }
+
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #f5f7fa;
-            padding: 20px;
+            min-width: 320px;
+            margin: 0;
+            background: var(--page);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
         }
 
-        .container {
-            max-width: 600px;
+        .page-header {
+            border-bottom: 1px solid var(--line);
+            background: #ffffff;
+        }
+
+        .header-inner,
+        main,
+        footer {
+            width: min(920px, calc(100% - 40px));
             margin: 0 auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 30px;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            min-height: 104px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            min-width: 0;
+        }
+
+        .brand img {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 auto;
         }
 
         h1 {
-            color: #1a1a1a;
-            font-size: 1.8em;
-            margin-bottom: 25px;
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+
+        .refresh-meta {
+            color: var(--muted);
+            font-size: 0.8rem;
+            line-height: 1.65;
+            text-align: right;
+        }
+
+        .refresh-meta p {
+            margin: 0;
+        }
+
+        .refresh-meta strong {
+            color: #59616b;
             font-weight: 600;
+        }
+
+        main {
+            padding: 42px 0 56px;
         }
 
         .notice {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 25px;
+            display: none;
+            margin-bottom: 20px;
+            border: 1px solid #e2c559;
+            border-radius: 6px;
+            background: #fff9e3;
+            padding: 14px 18px;
+            color: #624d07;
+        }
+
+        .notice h2,
+        .notice p {
+            margin: 0;
         }
 
         .notice h2 {
-            color: #856404;
-            font-size: 0.95em;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
+            font-size: 0.95rem;
         }
 
         .notice p {
-            color: #856404;
-            font-size: 0.9em;
+            font-size: 0.9rem;
         }
 
-        #isRunning {
-            padding: 12px 15px;
-            background: #d4edda;
-            border-left: 4px solid #28a745;
-            color: #000000;
-            border-radius: 4px;
-            font-size: 0.95em;
-            font-weight: 500;
+        .overall-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            min-height: 112px;
+            border: 1px solid #dfe4e8;
+            border-radius: 6px;
+            background: #ffffff;
+            padding: 24px 28px;
+            box-shadow: 0 2px 8px rgba(29, 36, 43, 0.04);
         }
 
-        .timeline {
-            margin-top: 30px;
+        .overall-icon {
+            display: grid;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: #aab0b8;
+            color: #ffffff;
+            flex: 0 0 auto;
+            font-size: 1.5rem;
+            font-weight: 700;
+            place-items: center;
         }
 
-        .timeline h2 {
-            color: #1a1a1a;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            font-weight: 600;
+        .overall-status[data-state="up"] .overall-icon {
+            background: var(--green);
+        }
+
+        .overall-status[data-state="down"] .overall-icon {
+            background: var(--red);
+        }
+
+        .overall-title {
+            margin: 0 0 5px;
+            color: #4e555e;
+            font-size: 1.2rem;
+            font-weight: 650;
+        }
+
+        .overall-copy {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin: 38px 0 15px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .section-heading span {
+            color: var(--muted);
+            font-size: 0.78rem;
+        }
+
+        .services {
+            display: grid;
+            gap: 12px;
+        }
+
+        .service {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 24px;
+            min-height: 82px;
+            border: 1px solid #e0e4e8;
+            border-radius: 6px;
+            background: #ffffff;
+            padding: 17px 20px;
+            box-shadow: 0 1px 4px rgba(29, 36, 43, 0.025);
+        }
+
+        .service-name {
+            overflow-wrap: anywhere;
+            margin: 0 0 5px;
+            font-size: 0.95rem;
+            font-weight: 650;
+        }
+
+        .service-url {
+            color: var(--muted);
+            font-size: 0.8rem;
+            text-decoration: none;
+        }
+
+        .service-url:hover {
+            color: #1474c4;
+            text-decoration: underline;
+        }
+
+        .service-state {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 112px;
+            justify-content: flex-end;
+            color: #767d86;
+            font-size: 0.82rem;
+            font-weight: 650;
+            white-space: nowrap;
+        }
+
+        .service-state::before {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #aab0b8;
+            content: "";
+            flex: 0 0 auto;
+        }
+
+        .service-state[data-state="up"] {
+            color: var(--green-dark);
+        }
+
+        .service-state[data-state="up"]::before {
+            background: var(--green);
+            box-shadow: 0 0 0 3px var(--green-soft);
+        }
+
+        .service-state[data-state="down"] {
+            color: #c63838;
+        }
+
+        .service-state[data-state="down"]::before {
+            background: var(--red);
+            box-shadow: 0 0 0 3px var(--red-soft);
+        }
+
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 25px 0 32px;
+            color: #9aa0a8;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .header-inner,
+            main,
+            footer {
+                width: min(100% - 28px, 920px);
+            }
+
+            .header-inner {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 12px;
+                padding: 24px 0;
+            }
+
+            .refresh-meta {
+                text-align: left;
+            }
+
+            main {
+                padding-top: 28px;
+            }
+
+            .overall-status {
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .overall-icon {
+                width: 46px;
+                height: 46px;
+            }
+
+            .service {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 12px;
+            }
+
+            .service-state {
+                justify-content: flex-start;
+            }
         }
     </style>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        h2 {
-            color: #555;
-        }
-
-        p {
-            font-size: 1.2em;
-        }
-    </style>
-
 </head>
 
 <body>
-    <noscript>
-        <div class="notice">
-            <h2>JavaScript is Disabled</h2>
-            <p>JavaScript is disabled. Server status and notice WILL NOT show</p>
+    <header class="page-header">
+        <div class="header-inner">
+            <div class="brand">
+                <img src="/favicon.ico" alt="">
+                <h1>JulerGT Service Status</h1>
+            </div>
+            <div class="refresh-meta" aria-live="polite">
+                <p>Last updated <strong id="lastUpdated">checking...</strong></p>
+                <p>Next update in <strong id="nextUpdate">60 sec.</strong></p>
+            </div>
         </div>
-    </noscript>
-    <div class="notice" id="notice"></div>
-    <h1>Status</h1>
-    <p id="isRunning">
-        Checking server status...
-        This does not mean all systems are operational.
-    </p>
+    </header>
 
-    <div class="timeline">
-        <h2>Past Incidents</h2>
-        <div id="pastIncidents">
-            <!-- Past incidents will be dynamically loaded here -->
+    <main>
+        <noscript>
+            <div class="notice" style="display: block">
+                <h2>JavaScript is disabled</h2>
+                <p>Service status and notices cannot be loaded.</p>
+            </div>
+        </noscript>
+
+        <section class="notice" id="notice" aria-live="polite">
+            <h2 id="noticeTitle"></h2>
+            <p id="noticeContent"></p>
+        </section>
+
+        <section class="overall-status" id="overallStatus" data-state="loading" aria-live="polite">
+            <span class="overall-icon" id="overallIcon" aria-hidden="true">...</span>
+            <div>
+                <p class="overall-title" id="overallTitle">Checking service status</p>
+                <p class="overall-copy" id="overallCopy">Contacting monitored services...</p>
+            </div>
+        </section>
+
+        <div class="section-heading">
+            <h2>Services</h2>
+            <span id="serviceCount">3 monitors</span>
         </div>
-    </div>
+        <div class="services" id="services" aria-label="Service status"></div>
+    </main>
+
+    <footer>JulerGT status page</footer>
 
     <script>
-        const notice = document.getElementById("notice");
-        if (notice) {
-            notice.style.display = "none";
+        const REFRESH_SECONDS = 60;
+        const overallStatus = document.getElementById('overallStatus');
+        const overallIcon = document.getElementById('overallIcon');
+        const overallTitle = document.getElementById('overallTitle');
+        const overallCopy = document.getElementById('overallCopy');
+        const servicesContainer = document.getElementById('services');
+        const lastUpdated = document.getElementById('lastUpdated');
+        const nextUpdate = document.getElementById('nextUpdate');
+        let secondsUntilRefresh = REFRESH_SECONDS;
+
+        function renderService(service) {
+            const row = document.createElement('article');
+            row.className = 'service';
+
+            const details = document.createElement('div');
+            const name = document.createElement('p');
+            const link = document.createElement('a');
+            const state = document.createElement('span');
+
+            name.className = 'service-name';
+            name.textContent = service.name;
+
+            link.className = 'service-url';
+            link.href = service.url;
+            link.textContent = new URL(service.url).hostname;
+            link.target = '_blank';
+            link.rel = 'noreferrer';
+
+            state.className = 'service-state';
+            state.dataset.state = service.operational ? 'up' : 'down';
+            state.textContent = service.operational ? 'Operational' : 'Unavailable';
+
+            details.append(name, link);
+            row.append(details, state);
+            return row;
+        }
+
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/isUp');
+                const data = await response.json();
+                const services = Array.isArray(data.services) ? data.services : [];
+                const allOperational = services.length > 0 && services.every(service => service.operational);
+                const upCount = services.filter(service => service.operational).length;
+
+                servicesContainer.replaceChildren(...services.map(renderService));
+                document.getElementById('serviceCount').textContent = `${services.length} monitors`;
+                overallStatus.dataset.state = allOperational ? 'up' : 'down';
+                overallIcon.innerHTML = allOperational ? '&#10003;' : '!';
+                overallTitle.textContent = allOperational ? 'All systems operational' : 'Some systems are down';
+                overallCopy.textContent = allOperational
+                    ? 'All monitored services are responding normally.'
+                    : `${upCount} of ${services.length} monitored services are operational.`;
+                lastUpdated.textContent = new Date(data.checkedAt || Date.now()).toLocaleTimeString();
+            } catch (error) {
+                console.error('Error checking service status:', error);
+                overallStatus.dataset.state = 'down';
+                overallIcon.textContent = '!';
+                overallTitle.textContent = 'Status check unavailable';
+                overallCopy.textContent = 'The status page could not contact its monitoring service.';
+                lastUpdated.textContent = 'failed';
+            } finally {
+                secondsUntilRefresh = REFRESH_SECONDS;
+            }
         }
 
         fetch('/api/notice')
             .then(response => response.json())
-            .then(notice => {
-                const noticeElement = document.getElementById("notice");
-                if (notice && notice.title && notice.content) {
-                    noticeElement.style.display = 'block'; // show notice if data exists
-                    noticeElement.innerHTML = `<h2>${notice.title}</h2><p>${notice.content}</p>`;
-                } else {
-                    noticeElement.style.display = 'none'; // hide notice if no data
-                }
-            });
-
-        fetch('/api/isUp', { method: 'GET' })
-            .then(response => response.json())
             .then(data => {
-                if (data.status === 200) {
-                    document.getElementById('isRunning').textContent = 'Server is running!';
-                } else if (data.status === 404) {
-                    document.getElementById('isRunning').style.background = '#f8d7da';
-                    document.getElementById('isRunning').style.borderColor = '#dc3545';
-                    document.getElementById('isRunning').textContent = 'Not found - The server isn\'t running.';
-                } else if (data.status === 502) {
-                    document.getElementById('isRunning').style.background = '#f8d7da';
-                    document.getElementById('isRunning').style.borderColor = '#dc3545';
-                    document.getElementById('isRunning').textContent = 'Bad Gateway - The server is running but the website crashed.';
-                } else if (data.status === 403) {
-                    document.getElementById('isRunning').style.background = '#f8d7da';
-                    document.getElementById('isRunning').style.borderColor = '#dc3545';
-                    document.getElementById('isRunning').textContent = 'Forbidden - Access to the web page(s) is forbidden by ngrok.';
+                if (!data || !data.title || !data.content) {
+                    return;
                 }
-            })
-            .catch(error => {
-                console.error('Error checking server status:', error);
-                if (error.message.includes('502')) {
-                    document.getElementById('isRunning').style.background = '#f8d7da';
-                    document.getElementById('isRunning').style.borderColor = '#dc3545';
-                    document.getElementById('isRunning').textContent = 'Bad Gateway - The server is running but the website crashed.';
-                } else if (error.message.includes('404')) {
-                    document.getElementById('isRunning').style.background = '#f8d7da';
-                    document.getElementById('isRunning').style.borderColor = '#dc3545';
-                    document.getElementById('isRunning').textContent = 'Not found - The server isn\'t running.';
-                } else {
-                    document.getElementById('isRunning').style.background = '#f8d7da';
-                    document.getElementById('isRunning').style.borderColor = '#dc3545';
-                    document.getElementById('isRunning').textContent = 'Error checking server status.';
-                }
-            });
 
-        fetch('/api/pastincidents')
-            .then(response => response.json())
-            // Incidents data: {status: 200, data: {0: {date: new Date().toISOString(), status: 200}}}
-            .then(data => {
-                const pastIncidentsContainer = document.getElementById('pastIncidents');
-                if (data && data.data) {
-                    const incidents = Object.values(data.data);
-                    if (incidents.length === 0) {
-                        pastIncidentsContainer.innerHTML = '<p>No past incidents recorded.</p>';
-                    } else {
-                        const list = document.createElement('ul');
-                        incidents.forEach(incident => {
-                            const listItem = document.createElement('li');
-                            const date = new Date(incident.timestamp);
-                            listItem.textContent = `${date.toLocaleString()}: Status ${incident.status}`;
-                            list.appendChild(listItem);
-                        });
-                        pastIncidentsContainer.appendChild(list);
-                    }
-                } else {
-                    pastIncidentsContainer.innerHTML = '<p>No past incidents recorded.</p>';
-                }
+                document.getElementById('noticeTitle').textContent = data.title;
+                document.getElementById('noticeContent').textContent = data.content;
+                document.getElementById('notice').style.display = 'block';
             })
-            .catch(error => {
-                console.error('Error fetching past incidents:', error);
-                document.getElementById('pastIncidents').innerHTML = '<p>Error loading past incidents.</p>';
-            });
+            .catch(error => console.error('Error fetching notice:', error));
+
+        setInterval(() => {
+            secondsUntilRefresh -= 1;
+            nextUpdate.textContent = `${secondsUntilRefresh} sec.`;
+
+            if (secondsUntilRefresh <= 0) {
+                secondsUntilRefresh = REFRESH_SECONDS;
+                updateStatus();
+            }
+        }, 1000);
+
+        updateStatus();
     </script>
 </body>
 
