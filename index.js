@@ -13,6 +13,11 @@ const SERVICES = [
         id: 'bismuth',
         name: 'Bismuth',
         url: 'https://bismuthrr.net'
+    },
+    {
+        id: 'recbanana',
+        name: 'RecBanana',
+        url: 'https://recbanana.julergt.org'
     }
 ];
 
